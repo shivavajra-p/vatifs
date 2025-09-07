@@ -37,7 +37,7 @@ codeunit 80200 "IFS RD VAT Service"
     /// </summary>
     trigger OnRun()
     begin
-        this.GetDatafromRDweb(this.GlobalVATID, this.GlobalBranchNo);
+        //this.GetDatafromRDweb(this.GlobalVATID, this.GlobalBranchNo);
     end;
 
     /// <summary>
@@ -50,7 +50,7 @@ codeunit 80200 "IFS RD VAT Service"
     /// <param name="BranchNo">The branch number (0 for head office, >0 for branches)</param>
     /// <exception cref="Error">Thrown when VAT ID length is not 13 characters</exception>
     /// <exception cref="Error">Thrown when VAT ID contains non-numeric characters</exception>
-    procedure SetVATID(VATID: Code[13]; BranchCode: Code[20])
+    local procedure SetVATID(VATID: Code[13]; BranchCode: Code[20])
     var
         TypeHelper: Codeunit "Type Helper";
     begin
@@ -68,7 +68,7 @@ codeunit 80200 "IFS RD VAT Service"
         this.GlobalBranchNo := this.ValidateBranchCode(BranchCode);
     end;
 
-    procedure ValidateBranchCode(BranchCode: Code[20]): Integer
+    local procedure ValidateBranchCode(BranchCode: Code[20]): Integer
     var
         TypeHelper: Codeunit "Type Helper";
         BranchNo: Integer;
@@ -544,7 +544,7 @@ codeunit 80200 "IFS RD VAT Service"
     begin
         RoomNumber := this.GetJsonValue(ResultJson, 'vRoomNumber');
         RoomNumber := RoomNumber.Trim();
-        if RoomNumber = '-' then
+        if (RoomNumber = '-') or (RoomNumber = '-.') then
             exit('')
         else
             exit(RoomNumber);
@@ -1004,9 +1004,14 @@ codeunit 80200 "IFS RD VAT Service"
         ContactName: Text;
         SurName: Text;
         FullContactName: Text;
+        ErrMsg: Text;
     begin
         this.SetVATID(VatID, BranchCode);
         this.GetDatafromRDweb(this.GlobalVATID, this.GlobalBranchNo);
+
+        ErrMsg := this.GetErrorMessage(this.GlobalJo);
+        if ErrMsg <> '' then
+            Error(ErrMsg);
 
         // เลขประจำตัวผู้เสียภาษี 13 หลัก (NID)
         // เลขที่สาขา (BranchNumber)
@@ -1024,7 +1029,6 @@ codeunit 80200 "IFS RD VAT Service"
         // อำเภอ (AmphurName)
         // จังหวัด (ProvinceName)
         // รหัสไปรษณีย์ (PostCode)
-
 
         if Contact.Get(ContactNo) then begin
 #pragma warning disable AA0139
