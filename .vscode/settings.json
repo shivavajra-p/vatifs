@@ -1,0 +1,9 @@
+{
+    "al.codeAnalyzers": ["${PerTenantExtensionCop}","${CodeCop}"],
+    "al.enableCodeAnalysis": true,
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#603501ff",
+        "titleBar.inactiveBackground": "#46331cff"
+    },
+    //"al.enableCodeActions": true
+}

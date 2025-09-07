@@ -1,7 +1,7 @@
 {
   "id": "b35bfff7-6b4b-4565-a83a-dc685047f2e2",
-  "name": "vatifs",
-  "publisher": "Default Publisher",
+  "name": "RD Data IFS Thailand",
+  "publisher": "IFS Thailand",
   "version": "1.0.0.0",
   "brief": "",
   "description": "",
@@ -10,20 +10,27 @@
   "help": "",
   "url": "",
   "logo": "",
-  "dependencies": [],
+  "dependencies": [
+      {
+          "id": "38e055ad-1725-4d19-9df2-3d9d83eb4ce1",
+          "name": "UBIZ-IFS CRM",
+          "publisher": "Ubiz Solution Co., Ltd.",
+          "version": "25.0.0.0"
+      }
+  ],
   "screenshots": [],
   "platform": "1.0.0.0",
   "application": "26.0.0.0",
   "idRanges": [
     {
-      "from": 50100,
-      "to": 50149
+      "from": 80200,
+      "to": 80299
     }
   ],
   "resourceExposurePolicy": {
     "allowDebugging": true,
-    "allowDownloadingSource": true,
-    "includeSourceInSymbolFile": true
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
   },
   "runtime": "15.0",
   "features": [
