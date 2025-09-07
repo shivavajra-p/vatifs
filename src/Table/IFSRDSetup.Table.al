@@ -55,6 +55,12 @@ table 80200 "IFS RD Setup"
             ToolTip = 'จังหวัดที่ไม่ต้องการให้แสดงคำนำหน้าชื่อ (เช่น กรุงเทพมหานคร ใส่ , คั่นระหว่างจังหวัด)';
             DataClassification = CustomerContent;
         }
+        field(9; "Notify after update"; Boolean)
+        {
+            Caption = 'Notify after update';
+            ToolTip = 'แจ้งเตือนหลังจากมีการอัพเดทข้อมูลจาก RD VAT Service';
+            DataClassification = CustomerContent;
+        }
 
     }
 

@@ -1,11 +1,12 @@
 namespace IFS.RDVATService;
 using Microsoft.CRM.Contact;
+using Microsoft.Sales.History;
 pageextension 80200 "IFS RDS Contact Card" extends "Contact Card"
 {
     layout
     {
         // Add changes to page layout here
-        addlast(Communication)
+        addlast(General)
         {
             group("RD VAT Service")
             {
@@ -19,7 +20,6 @@ pageextension 80200 "IFS RDS Contact Card" extends "Contact Card"
                     ApplicationArea = All;
                     Editable = false;
                     AboutText = 'RD Validate Date';
-
                 }
                 field("RD Validate By"; Rec."IFS RD Validate By")
                 {
@@ -51,12 +51,14 @@ pageextension 80200 "IFS RDS Contact Card" extends "Contact Card"
                     Contact: Record Contact;
                     IFSRDVATService: Codeunit "IFS RD VAT Service";
                 begin
-                    Contact.GetBySystemId(Rec.SystemId);
+                    Contact.Reset();
+                    Contact.setrange("No.", Rec."No.");
+                    Contact.FindFirst();
                     IFSRDVATService.ValidateContactDatafromRD(Contact);
-                    CurrPage.SaveRecord();
-                    CurrPage.Update(false);
                 end;
             }
+
+
             action("IFS RD Setup")
             {
                 ApplicationArea = All;
@@ -82,8 +84,10 @@ pageextension 80200 "IFS RDS Contact Card" extends "Contact Card"
                 AboutTitle = 'RD VAT Service';
                 actionref(GetDataRDVATServicePromote; GetDataRDVATService) { }
                 actionref(IFS_RD_Setup_Promote; "IFS RD Setup") { }
+
             }
         }
     }
-
+    var
+        X: page "Posted Sales Invoice";
 }

@@ -41,6 +41,10 @@ page 80200 "IFS RD Setup"
                 {
                     ToolTip = 'ระบุจังหวัดที่ไม่ต้องการให้แสดงคำนำหน้าชื่อ (เช่น กรุงเทพมหานคร ใส่ , คั่นระหว่างจังหวัด)';
                 }
+                field("Notify after update"; Rec."Notify after update")
+                {
+                    ToolTip = 'หากเลือกค่าใน Field นี้ จะมีการแจ้งเตือนหลังจากมีการอัพเดทข้อมูลจาก RD VAT Service';
+                }
             }
         }
     }

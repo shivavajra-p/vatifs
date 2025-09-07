@@ -931,6 +931,7 @@ codeunit 80200 "IFS RD VAT Service"
             Province := ProvinceDisplay + Province;
 #pragma warning restore AA0139
         end;
+        NotifyUser := IFSRDSetup."Notify after update";
     end;
 
     // ====================================================================
@@ -1054,6 +1055,7 @@ codeunit 80200 "IFS RD VAT Service"
         FullContactName: Text;
         ErrMsg: Text;
     begin
+
 #pragma warning disable AA0139
         this.SetVATID(Contact."VAT Registration No.", Contact.IFS_Branch_CRM);
 #pragma warning restore AA0139
@@ -1110,7 +1112,8 @@ codeunit 80200 "IFS RD VAT Service"
                 Contact."IFS RD Validate By" := UserId;
 #pragma warning restore AA0139
         Contact.Modify();
-        Message('Contact %1 updated successfully.', Contact."No.");
+        if this.NotifyUser then
+            Message('Contact %1 updated successfully.', Contact."No.");
 
     end;
 
@@ -1123,4 +1126,5 @@ codeunit 80200 "IFS RD VAT Service"
         GlobalBranchNo: Integer;
         GlobalJo: JsonObject;
         GlobalSuccess: Boolean;
+        NotifyUser: Boolean;
 }
