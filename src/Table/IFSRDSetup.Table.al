@@ -61,6 +61,10 @@ table 80200 "IFS RD Setup"
             ToolTip = 'แจ้งเตือนหลังจากมีการอัพเดทข้อมูลจาก RD VAT Service';
             DataClassification = CustomerContent;
         }
+        field(10; "Usage Info"; Blob)
+        {
+            DataClassification = ToBeClassified;
+        }
 
     }
 

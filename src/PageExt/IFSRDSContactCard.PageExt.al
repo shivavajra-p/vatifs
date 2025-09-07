@@ -88,6 +88,4 @@ pageextension 80200 "IFS RDS Contact Card" extends "Contact Card"
             }
         }
     }
-    var
-        X: page "Posted Sales Invoice";
 }
