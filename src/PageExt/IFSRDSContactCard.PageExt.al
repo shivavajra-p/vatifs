@@ -48,17 +48,41 @@ pageextension 80200 "IFS RDS Contact Card" extends "Contact Card"
                 Image = GetSourceDoc;
                 trigger OnAction()
                 var
+                    Contact: Record Contact;
                     IFSRDVATService: Codeunit "IFS RD VAT Service";
                 begin
-#pragma warning disable AA0139
-                    IFSRDVATService.ValidateContactDatafromRD(Rec."No.", Rec."VAT Registration No.", Rec.IFS_Branch_CRM);
-#pragma warning restore AA0139
+                    Contact.GetBySystemId(Rec.SystemId);
+                    IFSRDVATService.ValidateContactDatafromRD(Contact);
+                    CurrPage.SaveRecord();
+                    CurrPage.Update(false);
+                end;
+            }
+            action("IFS RD Setup")
+            {
+                ApplicationArea = All;
+                Caption = 'IFS RD Setup';
+                ToolTip = 'Open IFS RD Setup';
+                AboutText = 'Open IFS RD Setup';
+                AboutTitle = 'Open IFS RD Setup';
+                Image = Setup;
+                trigger OnAction()
+                var
+                    IFSRDSetupPage: Page "IFS RD Setup";
+                begin
+                    IFSRDSetupPage.Run();
                 end;
             }
         }
         addafter("Apply Template_Promoted")
         {
-            actionref(GetDataRDVATServicePromote; GetDataRDVATService) { }
+            group("RDVATServicePromoted")
+            {
+                Caption = 'RD VAT Service';
+                AboutText = 'Actions related to RD VAT Service.';
+                AboutTitle = 'RD VAT Service';
+                actionref(GetDataRDVATServicePromote; GetDataRDVATService) { }
+                actionref(IFS_RD_Setup_Promote; "IFS RD Setup") { }
+            }
         }
     }
 

@@ -733,7 +733,7 @@ codeunit 80200 "IFS RD VAT Service"
     /// </summary>
     /// <param name="ResultJson">JSON response containing address components</param>
     /// <returns>Complete formatted Thai address string</returns>
-    procedure GetFullAddressTest(ResultJson: JsonObject): Text
+    procedure GetFullAddressTest(ResultJson: JsonObject): Text //Never Use
     var
         Address: TextBuilder;
         Component: Text;
@@ -807,10 +807,24 @@ codeunit 80200 "IFS RD VAT Service"
     /// <returns>Complete formatted Thai address string</returns>
     procedure GetFullAddress(ResultJson: JsonObject; var Address1: Text[100]; var Address2: Text[50]; var City: Text[30]; var Province: Text[30]; var PostCode: Code[20])
     var
+        IFSRDSetup: Record "IFS RD Setup";
         Address: TextBuilder;
         Component: Text;
         Subdistrict: Text;
         District: Text;
+        MooDisplayLbl: Label 'หมู่ ';
+        SoiDisplayLbl: Label 'ซอย ';
+        StreetDisplayLbl: Label 'ถนน ';
+        SubdistrictDisplayLbl: Label 'ตำบล ';
+        DistrictDisplayLbl: Label 'อำเภอ ';
+        ProvinceDisplayLbl: Label 'จังหวัด ';
+        MooDisplay: Text;
+        SoiDisplay: Text;
+        StreetDisplay: Text;
+        SubdistrictDisplay: Text;
+        DistrictDisplay: Text;
+        ProvinceDisplay: Text;
+
     begin
         // Build complete Thai address from individual components
         // Each component is checked for empty values before adding
@@ -827,6 +841,34 @@ codeunit 80200 "IFS RD VAT Service"
         //  Province                / จังหวัด
         //  Postal Code             / รหัสไปรษณีย์
 
+        IFSRDSetup.Get();
+        //Begin Build Display Labels from Setup
+        if IFSRDSetup."Moo Display" <> '' then
+            MooDisplay := IFSRDSetup."Moo Display"
+        else
+            MooDisplay := MooDisplayLbl;
+        if IFSRDSetup."Soi Display" <> '' then
+            SoiDisplay := IFSRDSetup."Soi Display"
+        else
+            SoiDisplay := SoiDisplayLbl;
+        if IFSRDSetup."Street Display" <> '' then
+            StreetDisplay := IFSRDSetup."Street Display"
+        else
+            StreetDisplay := StreetDisplayLbl;
+        if IFSRDSetup."Thambon Display" <> '' then
+            SubdistrictDisplay := IFSRDSetup."Thambon Display"
+        else
+            SubdistrictDisplay := SubdistrictDisplayLbl;
+        if IFSRDSetup."Amphur Display" <> '' then
+            DistrictDisplay := IFSRDSetup."Amphur Display"
+        else
+            DistrictDisplay := DistrictDisplayLbl;
+        if IFSRDSetup."Province Display" <> '' then
+            ProvinceDisplay := IFSRDSetup."Province Display"
+        else
+            ProvinceDisplay := ProvinceDisplayLbl;
+        //End Build Display Labels from Setup
+
         Component := this.GetBuildingName(ResultJson);
         if Component <> '' then
             Address.Append(Component.Trim() + ' ');
@@ -841,14 +883,14 @@ codeunit 80200 "IFS RD VAT Service"
             Address.Append('เลขที่ ' + Component.Trim() + ' ');
         Component := this.GetMooNumber(ResultJson);
         if Component <> '' then
-            Address.Append('หมู่ ' + Component.Trim() + ' ');
+            Address.Append(MooDisplay + Component.Trim() + ' ');
         Component := this.GetSoiName(ResultJson);
         if Component <> '' then
-            Address.Append('ซอย ' + Component.Trim() + ' ');
+            Address.Append(SoiDisplay + Component.Trim() + ' ');
 
         Component := this.GetStreetName(ResultJson);
         if Component <> '' then
-            Address.Append('ถนน ' + Component.Trim() + ' ');
+            Address.Append(StreetDisplay + Component.Trim() + ' ');
 
 #pragma warning disable AA0139
         if strlen(Address.ToText()) > 100 then
@@ -877,11 +919,16 @@ codeunit 80200 "IFS RD VAT Service"
         if copystr(Postcode, 1, 1) = '1' then begin
             Address2 := 'แขวง ' + Subdistrict;
             City := 'เขต ' + District;
+            if StrPos(IFSRDSetup."Exclude Province Display", Province) = 0 then begin
+                Address2 := SubdistrictDisplay + Subdistrict;
+                City := DistrictDisplay + District;
+                Province := ProvinceDisplay + Province;
+            end;
         end else begin
-            Address2 := 'ตำบล ' + Subdistrict;
-            City := 'อำเภอ ' + District;
+            Address2 := SubdistrictDisplay + Subdistrict;
+            City := DistrictDisplay + District;
 #pragma warning disable AA0139
-            Province := 'จังหวัด ' + Province;
+            Province := ProvinceDisplay + Province;
 #pragma warning restore AA0139
         end;
     end;
@@ -994,9 +1041,8 @@ codeunit 80200 "IFS RD VAT Service"
         exit(Value);
     end;
 
-    internal procedure ValidateContactDatafromRD(ContactNo: Code[20]; VatID: Code[13]; BranchCode: Code[20])
+    internal procedure ValidateContactDatafromRD(var Contact: Record Contact)
     var
-        Contact: Record Contact;
         Address1: text[100];
         Address2: text[50];
         City: text[30];
@@ -1008,7 +1054,9 @@ codeunit 80200 "IFS RD VAT Service"
         FullContactName: Text;
         ErrMsg: Text;
     begin
-        this.SetVATID(VatID, BranchCode);
+#pragma warning disable AA0139
+        this.SetVATID(Contact."VAT Registration No.", Contact.IFS_Branch_CRM);
+#pragma warning restore AA0139
         this.GetDatafromRDweb(this.GlobalVATID, this.GlobalBranchNo);
 
         ErrMsg := this.GetErrorMessage(this.GlobalJo);
@@ -1032,39 +1080,38 @@ codeunit 80200 "IFS RD VAT Service"
         // จังหวัด (ProvinceName)
         // รหัสไปรษณีย์ (PostCode)
 
-        if Contact.Get(ContactNo) then begin
 #pragma warning disable AA0139
-            TitleName := this.GetCompanyTitleName(this.GlobalJo);
-            TitleName := TitleName.Trim();
-            ContactName := this.GetCompanyName(this.GlobalJo);
-            ContactName := ContactName.Trim();
-            SurName := this.GetCompanySurname(this.GlobalJo);
-            SurName := SurName.Trim();
-            if TitleName <> '' then
-                FullContactName := TitleName + ' ';
-            if ContactName <> '' then
-                FullContactName := FullContactName + ContactName + ' ';
-            if SurName <> '' then
-                FullContactName := FullContactName + SurName;
+        TitleName := this.GetCompanyTitleName(this.GlobalJo);
+        TitleName := TitleName.Trim();
+        ContactName := this.GetCompanyName(this.GlobalJo);
+        ContactName := ContactName.Trim();
+        SurName := this.GetCompanySurname(this.GlobalJo);
+        SurName := SurName.Trim();
+        if TitleName <> '' then
+            FullContactName := TitleName + ' ';
+        if ContactName <> '' then
+            FullContactName := FullContactName + ContactName + ' ';
+        if SurName <> '' then
+            FullContactName := FullContactName + SurName;
 
-            Contact.Name := FullContactName;
-            this.GetFullAddress(this.GlobalJo, Address1, Address2, City, Province, PostCode);
-            Contact.Address := Address1.Trim();
-            Contact."Address 2" := Address2.Trim();
-            Contact.City := City.Trim();
-            Contact.County := Province.Trim();
+        Contact.Name := FullContactName;
+        this.GetFullAddress(this.GlobalJo, Address1, Address2, City, Province, PostCode);
+        Contact.Address := Address1.Trim();
+        Contact."Address 2" := Address2.Trim();
+        Contact.City := City.Trim();
+        Contact.County := Province.Trim();
 #pragma warning restore AA0139
-            Contact."Post Code" := PostCode;
-            Contact."IFS RD Validate Date" := CurrentDateTime();
-            if strlen(UserId) > 50 then
-                Contact."IFS RD Validate By" := copystr(UserId, 1, 50)
-            else
+        Contact."Post Code" := PostCode;
+        Contact."IFS RD Validate Date" := CurrentDateTime();
+        if strlen(UserId) > 50 then
+            Contact."IFS RD Validate By" := copystr(UserId, 1, 50)
+        else
 #pragma warning disable AA0139
                 Contact."IFS RD Validate By" := UserId;
 #pragma warning restore AA0139
-            Contact.Modify();
-            Message('Contact %1 updated successfully.', ContactNo);
-        end;
+        Contact.Modify();
+        Message('Contact %1 updated successfully.', Contact."No.");
+
     end;
 
     // ====================================================================
