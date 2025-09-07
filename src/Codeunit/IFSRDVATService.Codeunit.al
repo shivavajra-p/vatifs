@@ -1008,29 +1008,6 @@ codeunit 80200 "IFS RD VAT Service"
         this.SetVATID(VatID, BranchCode);
         this.GetDatafromRDweb(this.GlobalVATID, this.GlobalBranchNo);
 
-        //   ResultJson.Add('vNID', this.GetSimpleChildText(ServiceResultNode, 'vNID'));                 // National ID / เลขบัตรประชาชน
-        //         ResultJson.Add('vtin', this.GetSimpleChildText(ServiceResultNode, 'vtin'));                 // Tax Identification Number / เลขประจำตัวผู้เสียภาษี
-        //         ResultJson.Add('vtitleName', this.GetSimpleChildText(ServiceResultNode, 'vtitleName'));           // Title Name / คำนำหน้าชื่อ
-        //         ResultJson.Add('vName', this.GetSimpleChildText(ServiceResultNode, 'vName'));                // Company/Person Name / ชื่อบริษัท/บุคคล
-        //         ResultJson.Add('vSurname', this.GetSimpleChildText(ServiceResultNode, 'vSurname'));             // Surname / นามสกุล
-        //         ResultJson.Add('vBranchTitleName', this.GetSimpleChildText(ServiceResultNode, 'vBranchTitleName'));     // Branch Title Name / คำนำหน้าชื่อสาขา
-        //         ResultJson.Add('vBranchName', this.GetSimpleChildText(ServiceResultNode, 'vBranchName'));          // Branch Name / ชื่อสาขา
-        //         ResultJson.Add('vBranchNumber', this.GetSimpleChildText(ServiceResultNode, 'vBranchNumber'));        // Branch Number / เลขที่สาขา
-        //         ResultJson.Add('vBuildingName', this.GetSimpleChildText(ServiceResultNode, 'vBuildingName'));        // Building Name / ชื่ออาคาร
-        //         ResultJson.Add('vFloorNumber', this.GetSimpleChildText(ServiceResultNode, 'vFloorNumber'));         // Floor Number / เลขที่ชั้น
-        //         ResultJson.Add('vVillageName', this.GetSimpleChildText(ServiceResultNode, 'vVillageName'));         // Village Name / ชื่อหมู่บ้าน
-        //         ResultJson.Add('vRoomNumber', this.GetSimpleChildText(ServiceResultNode, 'vRoomNumber'));          // Room Number / เลขที่ห้อง
-        //         ResultJson.Add('vHouseNumber', this.GetSimpleChildText(ServiceResultNode, 'vHouseNumber'));         // House Number / เลขที่บ้าน
-        //         ResultJson.Add('vMooNumber', this.GetSimpleChildText(ServiceResultNode, 'vMooNumber'));           // Moo Number (Village Group) / หมู่ที่
-        //         ResultJson.Add('vSoiName', this.GetSimpleChildText(ServiceResultNode, 'vSoiName'));             // Soi Name (Alley) / ชื่อซอย
-        //         ResultJson.Add('vStreetName', this.GetSimpleChildText(ServiceResultNode, 'vStreetName'));          // Street Name / ชื่อถนน
-        //         ResultJson.Add('vThambol', this.GetSimpleChildText(ServiceResultNode, 'vThambol'));             // Sub-district (Tambon) / ตำบล
-        //         ResultJson.Add('vAmphur', this.GetSimpleChildText(ServiceResultNode, 'vAmphur'));              // District (Amphoe) / อำเภอ
-        //         ResultJson.Add('vProvince', this.GetSimpleChildText(ServiceResultNode, 'vProvince'));            // Province / จังหวัด
-        //         ResultJson.Add('vPostCode', this.GetSimpleChildText(ServiceResultNode, 'vPostCode'));            // Postal Code / รหัสไปรษณีย์
-        //         ResultJson.Add('vBusinessFirstDate', this.GetSimpleChildText(ServiceResultNode, 'vBusinessFirstDate'));   // Business Registration Date / วันที่จดทะเบียนธุรกิจ
-        //         ResultJson.Add('vYaek', this.GetSimpleChildText(ServiceResultNode, 'vYaek'));                // Junction/Intersection / แยก
-        //         ResultJson.Add('vmsgerr', this.GetSimpleChildText(ServiceResultNode, 'vmsgerr'));  
         // เลขประจำตัวผู้เสียภาษี 13 หลัก (NID)
         // เลขที่สาขา (BranchNumber)
         // คำนำหน้าชื่อ (BranchTitle)
