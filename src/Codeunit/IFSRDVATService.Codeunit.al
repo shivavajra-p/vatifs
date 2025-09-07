@@ -849,10 +849,12 @@ codeunit 80200 "IFS RD VAT Service"
         Component := this.GetStreetName(ResultJson);
         if Component <> '' then
             Address.Append('ถนน ' + Component.Trim() + ' ');
+
 #pragma warning disable AA0139
+        if strlen(Address.ToText()) > 100 then
+            Error('Address1 exceeds 100 characters limit. Please manually adjust the address components.');
         Address1 := Address.ToText();
 #pragma warning restore AA0139
-
 
         Component := this.GetPostCode(ResultJson);
         if Component <> '' then
@@ -1045,7 +1047,7 @@ codeunit 80200 "IFS RD VAT Service"
             if SurName <> '' then
                 FullContactName := FullContactName + SurName;
 
-            contact.Name := FullContactName;
+            Contact.Name := FullContactName;
             this.GetFullAddress(this.GlobalJo, Address1, Address2, City, Province, PostCode);
             Contact.Address := Address1.Trim();
             Contact."Address 2" := Address2.Trim();
@@ -1053,6 +1055,13 @@ codeunit 80200 "IFS RD VAT Service"
             Contact.County := Province.Trim();
 #pragma warning restore AA0139
             Contact."Post Code" := PostCode;
+            Contact."IFS RD Validate Date" := CurrentDateTime();
+            if strlen(UserId) > 50 then
+                Contact."IFS RD Validate By" := copystr(UserId, 1, 50)
+            else
+#pragma warning disable AA0139
+                Contact."IFS RD Validate By" := UserId;
+#pragma warning restore AA0139
             Contact.Modify();
             Message('Contact %1 updated successfully.', ContactNo);
         end;
